@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Marginalia – notes with a study partner</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;700&display=swap">
+<style>
+:root{--bg:#e7ebf0;--panel:#f8fafc;--line:#d5dbe3;--ink:#1b2430;--mute:#5d6b7c;--acc:#0f766e;--accfg:#fff;--hl:#d7efe9;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10151c;--panel:#18202a;--line:#2a3441;--ink:#e6ebf1;--mute:#93a1b3;--acc:#5eead4;--accfg:#06201c;--hl:#173a36}}
+:root[data-theme="dark"]{--bg:#10151c;--panel:#18202a;--line:#2a3441;--ink:#e6ebf1;--mute:#93a1b3;--acc:#5eead4;--accfg:#06201c;--hl:#173a36}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 Figtree,system-ui,sans-serif;overflow:hidden}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:1px solid var(--line);border-radius:8px;padding:6px 11px}
+button:hover{background:var(--hl)}
+button:focus-visible,input:focus-visible,[contenteditable]:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+button.on{background:var(--acc);color:var(--accfg);border-color:var(--acc)}
+button.pri{background:var(--acc);color:var(--accfg);border-color:var(--acc);font-weight:700}
+#app{display:grid;grid-template-columns:230px 1fr 340px;height:100%}
+aside{background:var(--panel);display:flex;flex-direction:column;min-height:0}
+#side{border-right:1px solid var(--line)}
+#study{border-left:1px solid var(--line)}
+.hd{padding:14px;display:flex;align-items:center;justify-content:space-between;gap:8px;border-bottom:1px solid var(--line);font-weight:700}
+#list{overflow:auto;padding:8px;flex:1}
+.item{display:flex;align-items:center;gap:6px;padding:9px 10px;border-radius:8px;cursor:pointer}
+.item:hover{background:var(--hl)}
+.item.cur{background:var(--hl);box-shadow:inset 3px 0 var(--acc);font-weight:500}
+.item span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.item .x{border:0;padding:0 6px;color:var(--mute);opacity:.7}
+main{display:flex;flex-direction:column;min-width:0;min-height:0}
+#bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:8px 12px;background:var(--panel);border-bottom:1px solid var(--line)}
+#bar .sp{flex:1}
+.sw{width:22px;height:22px;border-radius:50%;padding:0;border:2px solid var(--panel);box-shadow:0 0 0 1px var(--line)}
+.sw.on{box-shadow:0 0 0 2px var(--acc)}
+#size{width:70px;accent-color:var(--acc)}
+#scroll{flex:1;overflow:auto;padding:22px 14px 60px}
+#page{position:relative;max-width:800px;min-height:1100px;margin:0 auto;background:#fffffe;color:#1b2430;border-radius:4px;box-shadow:0 1px 3px #0003,0 8px 30px #0002;background-image:linear-gradient(#e3e9f0 1px,transparent 1px);background-size:100% 32px;background-position:0 96px}
+#title{width:100%;border:0;background:none;font:700 28px/1.2 Figtree,sans-serif;padding:26px 36px 8px;color:#1b2430}
+#ed{padding:0 36px 40px;min-height:900px;outline:0;line-height:32px;font-size:16px}
+#ed h2{font-size:21px;line-height:32px;margin:0}
+#ed p,#ed ul{margin:0}
+#cv{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;touch-action:none}
+.draw #cv{pointer-events:auto;cursor:crosshair}
+.draw #ed,.draw #title{user-select:none}
+.tabs{display:flex;gap:4px;padding:8px;border-bottom:1px solid var(--line)}
+.tabs button{flex:1;padding:6px 4px;border-color:transparent}
+#out{flex:1;overflow:auto;padding:14px}
+.muted{color:var(--mute)}
+.md ul{padding-left:20px;margin:4px 0}.md p{margin:6px 0}
+.card{border:1px solid var(--line);border-radius:12px;min-height:170px;padding:18px;display:flex;align-items:center;justify-content:center;text-align:center;cursor:pointer;font-size:17px;background:var(--bg)}
+.card.back{background:var(--hl);border-color:var(--acc)}
+.row{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-top:10px}
+.opt{display:block;width:100%;text-align:left;margin-top:6px}
+.opt.good{background:#1f8a5b;color:#fff;border-color:#1f8a5b}.opt.bad{background:#c2413a;color:#fff;border-color:#c2413a}
+.msg{margin:8px 0;padding:8px 11px;border-radius:10px;background:var(--bg)}.msg.me{background:var(--hl)}
+#askrow{display:flex;gap:6px;padding:10px;border-top:1px solid var(--line)}
+#q{flex:1;min-width:0;border:1px solid var(--line);border-radius:8px;padding:6px 10px;background:var(--bg)}
+.mobile{display:none}
+button:disabled{opacity:.4;cursor:default}
+.hd2{display:flex;gap:6px;padding:8px 8px 0}.hd2 button,.hd2 select,.hd2 input{flex:1;min-width:0;padding:5px 8px;border:1px solid var(--line);border-radius:8px;background:var(--bg)}
+.fh{display:flex;align-items:center;gap:2px;margin-top:8px;padding:2px 4px;border-radius:8px}
+.fh.over{background:var(--hl);outline:2px dashed var(--acc)}
+.fh .ft{flex:1;border:0;text-align:left;padding:4px 6px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fh .m{border:0;padding:2px 6px;color:var(--mute)}
+.fh input{flex:1;min-width:0;padding:3px 6px;border:1px solid var(--acc);border-radius:6px;background:var(--bg)}
+.item.in{margin-left:14px}
+#mv{border:1px solid var(--line);border-radius:8px;padding:5px 8px;background:var(--panel);max-width:150px}
+#toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:9;background:var(--ink);color:var(--bg);padding:8px 10px 8px 14px;border-radius:10px;display:flex;gap:10px;align-items:center;box-shadow:0 6px 24px #0005}
+#toast[hidden]{display:none}
+#toast button{color:inherit;border-color:currentColor}
+@media (max-width:1000px){
+#app{grid-template-columns:1fr}
+#side,#study{position:fixed;top:0;bottom:0;width:min(340px,92vw);z-index:5;transition:transform .2s;padding-top:env(safe-area-inset-top,0px)}
+#side{left:0;transform:translateX(-105%)}#study{right:0;transform:translateX(105%)}
+#side.open,#study.open{transform:none;box-shadow:0 0 40px #0006}
+.mobile{display:inline-block}
+#title{font-size:24px;padding:20px 20px 6px}#ed{padding:0 20px 30px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div id="toast" role="status" hidden></div>
+<div id="app">
+<aside id="side">
+  <div class="hd">Marginalia <button class="pri" id="new">New note</button></div>
+  <div class="hd2"><button id="nf">New folder</button><select id="sort" aria-label="Sort notes"><option value="recent">Recent first</option><option value="az">A to Z</option></select></div>
+  <div class="hd2"><input id="fq" type="search" placeholder="Filter notes" aria-label="Filter notes"></div>
+  <div id="list"></div>
+</aside>
+<main>
+  <div id="bar">
+    <button class="mobile" id="tSide" aria-label="Notes">Notes</button>
+    <button data-t="type" class="on">Type</button>
+    <button data-t="pen">Pen</button>
+    <button data-t="hl">Highlight</button>
+    <button data-t="erase">Eraser</button>
+    <span id="sws"></span>
+    <input id="size" type="range" min="1" max="8" step=".5" value="2.5" aria-label="Stroke size">
+    <button id="undo" title="Undo (Ctrl+Z)">Undo</button><button id="redo" title="Redo (Ctrl+Shift+Z)">Redo</button><select id="mv" aria-label="Move note to folder"></select>
+    <button id="fb" title="Bold"><b>B</b></button><button id="fh" title="Heading">H</button><button id="fl" title="Bullets">• List</button>
+    <span class="sp"></span>
+    <button class="pri" id="tStudy">Study</button>
+  </div>
+  <div id="scroll"><div id="page"><input id="title" placeholder="Untitled note" aria-label="Note title"><div id="ed" contenteditable="true" spellcheck="true"></div><canvas id="cv"></canvas></div></div>
+</main>
+<aside id="study">
+  <div class="hd">Study tools <button class="mobile" id="cStudy">Close</button></div>
+  <div class="tabs"><button data-p="sum" class="on">Summary</button><button data-p="cards">Cards</button><button data-p="quiz">Quiz</button><button data-p="ask">Ask</button></div>
+  <div id="out"></div>
+  <div id="askrow" hidden><input id="q" placeholder="Ask about your notes" aria-label="Question"><button class="pri" id="send">Ask</button></div>
+</aside>
+</div>
+<script>
+const $=s=>document.querySelector(s);
+let S={notes:[],cur:null},tool='type',color='#1b2430',size=2.5,panel='sum',deck=[],di=0,flip=false,quiz=[],qi=0,score=0,chat=[],st;
+const mk=(t,h)=>({id:Date.now()+Math.random().toString(36).slice(2,6),title:t,html:h||'',strokes:[],t:Date.now()});
+try{const r=localStorage.getItem('marg1');if(r)S=JSON.parse(r)}catch(e){}
+if(!S.notes||!S.notes.length){const n=mk('Welcome','<h2>Welcome</h2><p>Type here, or switch to Pen and write or sketch right on the page.</p><p>When you have a few notes, open Study for a summary, flashcards, a quiz, or to ask questions about them.</p>');S.notes=[n];S.cur=n.id}
+const cur=()=>S.notes.find(n=>n.id===S.cur)||S.notes[0];
+S.folders=S.folders||[];S.sort=S.sort||'recent';S.col=S.col||{};
+let shown=null,U=[],R=[],last=null,dirty=false,editing=null;
+function save(){dirty=true;clearTimeout(st);st=setTimeout(flush,300)}
+function flush(){clearTimeout(st);const n=S.notes.find(m=>m.id===shown);if(n&&dirty){n.html=$('#ed').innerHTML;n.title=$('#title').value;n.t=Date.now();commit();persist();renderList()}dirty=false}
+addEventListener('pagehide',flush);
+function noteRow(n,ind){const d=document.createElement('div');d.className='item'+(ind?' in':'')+(n.id===S.cur?' cur':'');d.draggable=true;d.ondragstart=e=>e.dataTransfer.setData('text/plain',n.id);const s=document.createElement('span');s.textContent=n.title||'Untitled note';const x=document.createElement('button');x.className='x';x.textContent='✕';x.setAttribute('aria-label','Delete note');x.onclick=e=>{e.stopPropagation();delNote(n.id)};d.onclick=()=>{S.cur=n.id;persist();openNote();$('#side').classList.remove('open')};d.append(s,x);return d}
+function renderList(){const l=$('#list'),q=$('#fq').value.trim().toLowerCase();l.innerHTML='';
+const srt=a=>a.filter(n=>!q||(n.title||'untitled note').toLowerCase().includes(q)).sort(S.sort==='az'?(x,y)=>(x.title||'~').localeCompare(y.title||'~'):(x,y)=>y.t-x.t);
+const drop=(el,f)=>{el.ondragover=e=>{e.preventDefault();el.classList.add('over')};el.ondragleave=()=>el.classList.remove('over');el.ondrop=e=>{e.preventDefault();el.classList.remove('over');mvNote(e.dataTransfer.getData('text/plain'),f)}};
+const btn=(t,l2,fn)=>{const b=document.createElement('button');b.className='m';b.textContent=t;b.setAttribute('aria-label',l2);b.onclick=fn;return b};
+S.folders.forEach(f=>{const ns=srt(S.notes.filter(n=>n.folder===f.id));if(q&&!ns.length)return;const h=document.createElement('div');h.className='fh';drop(h,f.id);
+if(editing===f.id){const i=document.createElement('input');i.id='fname';i.value=f.name;i.setAttribute('aria-label','Folder name');const ok=()=>{if(editing!==f.id)return;editing=null;const v=i.value.trim(),a=f.name;if(v&&v!==a){f.name=v;push({u:()=>{f.name=a;persist();renderList();mvSel()},r:()=>{f.name=v;persist();renderList();mvSel()}})}persist();renderList();mvSel()};i.onblur=ok;i.onkeydown=e=>{if(e.key==='Enter')ok();if(e.key==='Escape'){i.value=f.name;ok()}};h.append(i);setTimeout(()=>{i.focus();i.select()})}
+else{const open=q||!S.col[f.id];const t=document.createElement('button');t.className='ft';t.textContent=(open?'▾ ':'▸ ')+f.name;t.onclick=()=>{S.col[f.id]=!S.col[f.id];persist();renderList()};const c=document.createElement('span');c.className='m';c.textContent=ns.length;h.append(t,c,btn('✎','Rename folder',()=>{editing=f.id;renderList()}),btn('✕','Delete folder',()=>delFolder(f)))}
+l.append(h);if(q||!S.col[f.id])ns.forEach(n=>l.append(noteRow(n,1)))});
+const un=srt(S.notes.filter(n=>!S.folders.some(f=>f.id===n.folder)));if(S.folders.length){const h=document.createElement('div');h.className='fh';h.innerHTML='<span class="ft">Unfiled</span>';drop(h,null);if(!q||un.length)l.append(h)}
+un.forEach(n=>l.append(noteRow(n,0)))}
+function mvSel(){const s=$('#mv');s.innerHTML='';[['','Unfiled']].concat(S.folders.map(f=>[f.id,f.name])).forEach(([v,t])=>{const o=document.createElement('option');o.value=v;o.textContent='Folder: '+t;s.append(o)});s.value=S.folders.some(f=>f.id===cur().folder)?cur().folder:''}
+function mvNote(id,f){const n=S.notes.find(m=>m.id===id);if(!n||(n.folder||null)===f)return;const from=n.folder||null,set=v=>{n.folder=v;persist();renderList();mvSel()};set(f);push({u:()=>set(from),r:()=>set(f)})}
+function addFolder(){const f={id:'f'+Date.now(),name:'New folder'};S.folders.push(f);editing=f.id;persist();renderList()}
+function delFolder(f){const i=S.folders.indexOf(f),ids=S.notes.filter(n=>n.folder===f.id).map(n=>n.id);const rm=()=>{S.folders=S.folders.filter(x=>x!==f);S.notes.forEach(n=>{if(n.folder===f.id)n.folder=null});persist();renderList();mvSel()},add=()=>{S.folders.splice(i,0,f);S.notes.forEach(n=>{if(ids.includes(n.id))n.folder=f.id});persist();renderList();mvSel()};rm();push({u:add,r:rm});toast('Folder deleted. Its notes are now unfiled.')}
+function delNote(id){flush();const i=S.notes.findIndex(m=>m.id===id);if(i<0)return;const n=S.notes[i];let ph=null;const rm=()=>{S.notes.splice(S.notes.indexOf(n),1);ph=null;if(!S.notes.length){ph=mk('');S.notes.push(ph)}if(S.cur===n.id)S.cur=S.notes[0].id;persist();openNote()},add=()=>{if(ph)S.notes=S.notes.filter(m=>m!==ph);S.notes.splice(i,0,n);S.cur=n.id;persist();openNote()};rm();push({u:add,r:rm});toast('Note deleted.')}
+function toast(m){const t=$('#toast');t.innerHTML='';const s=document.createElement('span'),b=document.createElement('button');s.textContent=m;b.textContent='Undo';b.onclick=()=>{undo();t.hidden=true};t.append(s,b);t.hidden=false;clearTimeout(t._h);t._h=setTimeout(()=>t.hidden=true,6000)}
+$('#nf').onclick=addFolder;$('#sort').value=S.sort;$('#sort').onchange=e=>{S.sort=e.target.value;persist();renderList()};$('#fq').oninput=renderList;$('#mv').onchange=e=>mvNote(S.cur,e.target.value||null);
+function persist(){try{localStorage.setItem('marg1',JSON.stringify(S))}catch(e){}}
+function openNote(){flush();const n=cur();S.cur=n.id;shown=n.id;$('#ed').innerHTML=n.html;$('#title').value=n.title;last={id:n.id,...snap(n)};dirty=false;renderList();fit();deck=[];quiz=[];chat=[];render();mvSel()}
+$('#new').onclick=()=>{flush();const n=mk('');n.folder=cur().folder||null;S.notes.push(n);S.cur=n.id;persist();openNote();$('#title').focus();$('#side').classList.remove('open')};
+$('#ed').oninput=save;$('#title').oninput=save;
+
+/* drawing */
+const cv=$('#cv'),cx=cv.getContext('2d');let W=1,H=1,drawing=null;
+function fit(){const p=$('#page'),r=devicePixelRatio||1;W=p.clientWidth;H=p.clientHeight;cv.width=W*r;cv.height=H*r;cx.setTransform(r,0,0,r,0,0);redraw()}
+new ResizeObserver(fit).observe($('#page'));
+function paint(c,s,w,h){c.lineCap=c.lineJoin='round';c.strokeStyle=s.c;c.globalAlpha=s.a;c.lineWidth=s.w;c.beginPath();s.p.forEach(([x,y],i)=>i?c.lineTo(x*w,y):c.moveTo(x*w,y));if(s.p.length==1)c.lineTo(s.p[0][0]*w+.1,s.p[0][1]);c.stroke();c.globalAlpha=1}
+function redraw(){cx.clearRect(0,0,W,H);cur().strokes.forEach(s=>paint(cx,s,W,H));if(drawing)paint(cx,drawing,W,H)}
+const pos=e=>{const r=cv.getBoundingClientRect();return[(e.clientX-r.left)/r.width,e.clientY-r.top]};
+cv.onpointerdown=e=>{cv.setPointerCapture(e.pointerId);const[x,y]=pos(e);if(tool==='erase'){erase(x,y)}else{const hl=tool==='hl';drawing={c:color,a:hl?.35:1,w:hl?size*5:size,p:[[x,y]]}}redraw()};
+cv.onpointermove=e=>{if(!e.buttons)return;const[x,y]=pos(e);if(tool==='erase')erase(x,y);else if(drawing)drawing.p.push([x,y]);redraw()};
+cv.onpointerup=()=>{if(drawing){cur().strokes.push(drawing);drawing=null;save()}};
+function erase(x,y){const n=cur(),b=n.strokes.length;n.strokes=n.strokes.filter(s=>!s.p.some(p=>Math.hypot((p[0]-x)*W,p[1]-y)<12));if(n.strokes.length!==b)save()}
+$('#undo').onclick=undo;$('#redo').onclick=redo;
+document.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{tool=b.dataset.t;document.querySelectorAll('[data-t]').forEach(x=>x.classList.toggle('on',x===b));$('#page').classList.toggle('draw',tool!=='type')});
+['#1b2430','#2b5fd9','#d6453d','#1f8a5b','#f2b705'].forEach((c,i)=>{const b=document.createElement('button');b.className='sw'+(i?'':' on');b.style.background=c;b.setAttribute('aria-label','Colour '+c);b.onclick=()=>{color=c;document.querySelectorAll('.sw').forEach(x=>x.classList.toggle('on',x===b));if(tool==='type'||tool==='erase')$('[data-t=pen]').click()};$('#sws').append(b)});
+$('#size').oninput=e=>size=+e.target.value;
+const fmt=(c,v)=>{$('#ed').focus();document.execCommand(c,false,v);save()};
+$('#fb').onclick=()=>fmt('bold');$('#fh').onclick=()=>fmt('formatBlock','h2');$('#fl').onclick=()=>fmt('insertUnorderedList');
+
+/* undo history: typing, strokes, deletes, moves, renames */
+const snap=n=>({h:$('#ed').innerHTML,s:JSON.stringify(n.strokes),t:$('#title').value});
+function commit(){const n=S.notes.find(m=>m.id===shown);if(!n)return;const b=snap(n);if(last&&last.id===n.id&&(last.h!==b.h||last.s!==b.s||last.t!==b.t)){const a=last,id=n.id;push({u:()=>put(id,a),r:()=>put(id,b)})}last={id:n.id,...b}}
+function put(id,v){S.cur=id;openNote();const n=cur();$('#ed').innerHTML=n.html=v.h;n.strokes=JSON.parse(v.s);$('#title').value=n.title=v.t;n.t=Date.now();last={id,...v};redraw();persist();renderList()}
+function push(e){U.push(e);if(U.length>200)U.shift();R=[];hist()}
+function undo(){flush();const e=U.pop();if(!e)return;e.u();R.push(e);hist()}
+function redo(){flush();const e=R.pop();if(!e)return;e.r();U.push(e);hist()}
+function hist(){$('#undo').disabled=!U.length;$('#redo').disabled=!R.length}
+document.addEventListener('keydown',e=>{if(!(e.ctrlKey||e.metaKey))return;const k=e.key.toLowerCase();if(k!=='z'&&k!=='y')return;if(e.target.matches('#title,#q,#fq,#fname'))return;e.preventDefault();(k==='y'||e.shiftKey)?redo():undo()});
+hist();
+/* study panel */
+const esc=s=>s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+function md(t){let h='',ul=false;t.split('\n').forEach(l=>{l=esc(l).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>');const m=l.match(/^\s*[-*•]\s+(.*)/);if(m){if(!ul){h+='<ul>';ul=true}h+='<li>'+m[1]+'</li>'}else{if(ul){h+='</ul>';ul=false}if(l.trim())h+='<p>'+l.replace(/^#+\s*/,'<b>')+(/^#+/.test(l)?'</b>':'')+'</p>'}});return h+(ul?'</ul>':'')}
+const text=()=>$('#ed').innerText.trim();
+async function smp(){try{return window.claude?await claude.use('sample'):null}catch(e){return null}}
+const failMsg=e=>e&&e.code==='not_granted'?'Permission was declined. Try again and allow Claude access to use the study tools.':e&&e.code==='rate_limited'?'Too many requests. Wait a moment and try again.':'Something went wrong. Try again.';
+function need(){const t=text();if(t.length<40){$('#out').innerHTML='<p class="muted">Write a few lines first (at least a sentence or two), then come back. For handwriting, use “Read my handwriting” in the Summary tab.</p>';return null}return t}
+const NOTE=t=>'Here are a student’s notes:\n"""\n'+t.slice(0,12000)+'\n"""\n\n';
+function render(){document.querySelectorAll('[data-p]').forEach(b=>b.classList.toggle('on',b.dataset.p===panel));$('#askrow').hidden=panel!=='ask';const o=$('#out');
+if(panel==='sum'){o.innerHTML='<p class="muted">Turn your notes into a short review sheet.</p><div class="row" style="justify-content:flex-start"><button class="pri" id="go">Summarise notes</button><button id="hw">Read my handwriting</button></div><div id="res" class="md"></div>';$('#go').onclick=summ;$('#hw').onclick=hand}
+else if(panel==='cards'){if(!deck.length)o.innerHTML='<p class="muted">Make flashcards from the current note.</p><button class="pri" id="go">Make flashcards</button>',$('#go').onclick=cards;else showCard()}
+else if(panel==='quiz'){if(!quiz.length)o.innerHTML='<p class="muted">Test yourself with a five-question multiple choice quiz.</p><button class="pri" id="go">Start quiz</button>',$('#go').onclick=mkquiz;else showQ()}
+else{o.innerHTML=chat.length?'':'<p class="muted">Ask anything about this note, like “explain the second point simply” or “what might an exam ask?”</p>';chat.forEach(m=>{const d=document.createElement('div');d.className='msg md'+(m.role==='user'?' me':'');d.innerHTML=md(m.content);o.append(d)});o.scrollTop=o.scrollHeight}}
+document.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{panel=b.dataset.p;render()});
+async function summ(){const t=need();if(!t)return;const s=await smp();const r=$('#res');if(!s){r.innerHTML='<p class="muted">AI tools are not available in this view.</p>';return}r.innerHTML='<p class="muted">Reading your notes…</p>';try{await s(NOTE(t)+'Write a concise review sheet: a one-sentence main idea, then bullet points grouped under short bold headings, then up to 3 terms worth memorising. Plain language.',{onText:({text})=>r.innerHTML=md(text)})}catch(e){r.innerHTML='<p>'+failMsg(e)+'</p>'}}
+async function hand(){const n=cur(),r=$('#res');if(!n.strokes.length){r.innerHTML='<p class="muted">Draw or write something with the pen first.</p>';return}const s=await smp();if(!s||!(await s.limits()).images){r.innerHTML='<p class="muted">Handwriting reading is not available in this view.</p>';return}r.innerHTML='<p class="muted">Reading…</p>';try{const c=document.createElement('canvas');c.width=1600;c.height=Math.round(1600*H/W);const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.scale(c.width/W,c.width/W);n.strokes.forEach(k=>paint(x,k,W,H));const blob=await new Promise(v=>c.toBlob(v,'image/png'));const o=await s('Transcribe the handwriting in this image as plain text. Return only the text.',{images:[blob],cache:false});$('#ed').insertAdjacentHTML('beforeend','<p>'+esc(o.text).replace(/\n/g,'<br>')+'</p>');save();r.innerHTML='<p>Added the transcription to the end of your note.</p>'}catch(e){r.innerHTML='<p>'+failMsg(e)+'</p>'}}
+async function cards(){const t=need();if(!t)return;const s=await smp();if(!s){$('#out').innerHTML='<p class="muted">AI tools are not available in this view.</p>';return}$('#out').innerHTML='<p class="muted">Making flashcards…</p>';try{deck=await s.json(NOTE(t)+'Make 8 flashcards covering the most testable ideas. Reply with only a JSON array of objects {"q":"question","a":"short answer"}.');di=0;flip=false;showCard()}catch(e){deck=[];$('#out').innerHTML='<p>'+failMsg(e)+'</p>'}}
+function showCard(){const c=deck[di],o=$('#out');o.innerHTML='<p class="muted">Card '+(di+1)+' of '+deck.length+' · tap the card to flip</p><div class="card'+(flip?' back':'')+'" id="cd" tabindex="0"></div><div class="row"><button id="pv">Back</button><button id="nx" class="pri">Next</button></div><div class="row" style="justify-content:flex-start"><button id="rg">Make new cards</button></div>';$('#cd').textContent=flip?c.a:c.q;const f=()=>{flip=!flip;showCard()};$('#cd').onclick=f;$('#cd').onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();f()}};$('#pv').onclick=()=>{di=(di+deck.length-1)%deck.length;flip=false;showCard()};$('#nx').onclick=()=>{di=(di+1)%deck.length;flip=false;showCard()};$('#rg').onclick=()=>{deck=[];cards()}}
+async function mkquiz(){const t=need();if(!t)return;const s=await smp();if(!s){$('#out').innerHTML='<p class="muted">AI tools are not available in this view.</p>';return}$('#out').innerHTML='<p class="muted">Writing questions…</p>';try{quiz=await s.json(NOTE(t)+'Write 5 multiple choice questions with 4 options each. Reply with only a JSON array of {"q":"","options":["","","",""],"answer":0,"why":"one-sentence explanation"} where answer is the index of the correct option.');qi=0;score=0;showQ()}catch(e){quiz=[];$('#out').innerHTML='<p>'+failMsg(e)+'</p>'}}
+function showQ(){const o=$('#out');if(qi>=quiz.length){o.innerHTML='<h3>You scored '+score+' of '+quiz.length+'</h3><p class="muted">'+(score===quiz.length?'Nothing missed. Try a harder note next.':'Review the points you missed, then try a fresh quiz.')+'</p><button class="pri" id="again">New quiz</button>';$('#again').onclick=()=>{quiz=[];mkquiz()};return}const q=quiz[qi];o.innerHTML='<p class="muted">Question '+(qi+1)+' of '+quiz.length+'</p><b id="qt"></b><div id="opts"></div><div id="why" class="muted" style="margin-top:10px"></div><div class="row"><span></span><button id="nq" class="pri" hidden>Next</button></div>';$('#qt').textContent=q.q;let done=false;q.options.forEach((t,i)=>{const b=document.createElement('button');b.className='opt';b.textContent=t;b.onclick=()=>{if(done)return;done=true;if(i===q.answer)score++;[...$('#opts').children].forEach((x,j)=>x.classList.add(j===q.answer?'good':j===i?'bad':'x'));$('#why').textContent=q.why||'';$('#nq').hidden=false};$('#opts').append(b)});$('#nq').onclick=()=>{qi++;showQ()}}
+async function ask(){const v=$('#q').value.trim();if(!v)return;const t=text();const s=await smp();$('#q').value='';chat.push({role:'user',content:v});render();if(!s){chat.push({role:'assistant',content:'AI tools are not available in this view.'});render();return}try{let hist=chat.slice(-8);if(hist[0].role!=='user')hist.shift();const msgs=hist.map((m,i)=>({role:m.role,content:i===0?NOTE(t)+'Answer questions about these notes helpfully and briefly, for a student.\n\n'+m.content:m.content}));const r=await s(msgs,{cache:false});chat.push({role:'assistant',content:r.text})}catch(e){chat.push({role:'assistant',content:failMsg(e)})}render()}
+$('#send').onclick=ask;$('#q').onkeydown=e=>{if(e.key==='Enter')ask()};
+$('#tSide').onclick=()=>$('#side').classList.toggle('open');$('#tStudy').onclick=()=>$('#study').classList.toggle('open');$('#cStudy').onclick=()=>$('#study').classList.remove('open');
+openNote();
+</script>
+</body>
+</html>
